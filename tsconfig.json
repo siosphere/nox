@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./",
+        "jsx": "react",
+        "paths": {
+            "*": ["src/*"]
+        },
+        "lib": [
+            "es6",
+            "dom",
+            "es2017.object",
+            "es2016.array.include"
+        ],
+        "declaration": true,
+        "experimentalDecorators": true,
+        "declarationDir": "./lib",
+        "plugins": [
+            {
+                "transform": "@workshift/ts-transformer-imports"
+            }
+        ]
+    },
+    "include": [
+        "./src/**/*"
+    ]
+}

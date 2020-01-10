@@ -1,0 +1,11 @@
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
+import {Entry, BrowserRouter, Switch, Route, Link} from '@workshift/nox/lib/client'
+import AppContext from '/** nox:context */'
+
+/** nox:components */
+
+
+ReactDOM.hydrate(<Entry context={AppContext}><BrowserRouter><Switch>
+    /** nox:routes */
+</Switch></BrowserRouter></Entry>, document.body)
