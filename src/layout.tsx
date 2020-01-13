@@ -1,29 +1,31 @@
 import * as React from 'react'
 import * as ReactDOMServer from 'react-dom/server'
-
+import Meta, { MetaContext } from 'layout/meta'
 const LayoutContext = React.createContext([null, null])
 
 interface LayoutProps
 {
     head : React.ReactElement
     layoutRef ?: React.Ref<any>
+    metaContext ?: Meta
 }
+
 
 class Layout extends React.PureComponent<LayoutProps, {}>
 {
     static contextType = LayoutContext
 
-    private constructor(props : LayoutProps)
+    constructor(props : LayoutProps)
     {
         super(props)
     }
 
-    getHead() : string
+    getHead(meta : Meta) : string
     {
-        return ReactDOMServer.renderToStaticMarkup(this.props.head)
+        return ReactDOMServer.renderToStaticMarkup(<MetaContext.Provider value={meta}>{this.props.head}</MetaContext.Provider>)
     }
 
-    getHTML(componentOutput : string, componentProps : string)
+    getHTML(meta : Meta, componentOutput : string, componentProps : string)
     {
         return `<!doctype html>
 <!--[if !IE]><!--->
@@ -33,7 +35,7 @@ class Layout extends React.PureComponent<LayoutProps, {}>
 <html class="ie" lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <![endif]-->
 <html>
-${this.getHead()}
+${this.getHead(meta)}
 <body>
 ${componentOutput}
 <script type="text/javascript">

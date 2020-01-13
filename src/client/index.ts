@@ -3,6 +3,7 @@ import {BrowserRouter, NavLink, Link, Redirect} from 'react-router-dom'
 import {Route, Switch} from "react-router"
 import ClientContext from 'client/context'
 import Entry from 'client/entry'
+import {MetaContext} from 'layout/meta'
 
 export default {
     Wrap: (component, name, path) => {
@@ -16,6 +17,10 @@ export default {
     useContext: () => React.useContext(ClientContext)
 }
 
+const useMeta = () => {
+    return React.useContext(MetaContext)
+}
+
 export {
     BrowserRouter,
     NavLink,
@@ -23,5 +28,7 @@ export {
     Redirect,
     Route,
     Switch,
-    Entry
+    Entry,
+    MetaContext,
+    useMeta
 }

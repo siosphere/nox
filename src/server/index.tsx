@@ -6,6 +6,7 @@ import Response from './response'
 import {LayoutContext} from 'layout'
 import SDK, {SDKContext} from 'client/sdk'
 import ClientContext from 'client/context'
+import {MetaWrapper, MetaContext} from 'layout/meta'
 
 const NOX_AUTH_HEADER = 'NOX_AUTH'
 
@@ -36,25 +37,37 @@ class Server
 
         //setup auth for SDK through JWT
         const sdk = new SDK()
+        let meta = null
+
         const componentOutput = ReactDOMServer.renderToString(
-        <ClientContext.Provider value={context}>
-            <SDKContext.Provider value={sdk}>
-                <LayoutContext.Provider value={[null, setContext]}>
-                    <StaticRouter location={this.request.url}>
-                        <Switch>
-                            <Route path={this.request.routeUrls}>
-                                {component}
-                            </Route>
-                            {this.getAdditionalRoutes()}
-                        </Switch>
-                    </StaticRouter>
-                </LayoutContext.Provider>
-            </SDKContext.Provider>
-        </ClientContext.Provider>)
+            <MetaWrapper>
+                <ClientContext.Provider value={context}>
+                    <SDKContext.Provider value={sdk}>
+                        <MetaContext.Consumer>
+                            {metaContext => {
+                                meta = metaContext
+                                return <LayoutContext.Provider value={[null, setContext]}>
+                                    <StaticRouter location={this.request.url}>
+                                        <Switch>
+                                            <Route path={this.request.routeUrls}>
+                                                {React.cloneElement(component, {
+                                                    ...component.props,
+                                                    metaContext: metaContext
+                                                })}
+                                            </Route>
+                                            {this.getAdditionalRoutes()}
+                                        </Switch>
+                                    </StaticRouter>
+                                </LayoutContext.Provider>
+                            }}
+                        </MetaContext.Consumer>
+                    </SDKContext.Provider>
+                </ClientContext.Provider>
+            </MetaWrapper>)
 
         const componentProps = JSON.stringify(context.dump())
 
-        const output = layout.getHTML(componentOutput, componentProps)
+        const output = layout.getHTML(meta, componentOutput, componentProps)
 
         return new Response(output)
     }
