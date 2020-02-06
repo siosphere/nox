@@ -111,6 +111,13 @@ class Nox
         this.api.options = this.api.options.bind(this)
     }
 
+    use(cb : (req : express.Request, res : express.Response, next : (...any) => void) => void)
+    {
+        this.app.use(cb)
+
+        return this
+    }
+
     route(urls : string | string[], cb : (server : Server) => Response, component : React.JSXElementConstructor<any>)
     {
         this.registerRoutes(urls, component)
@@ -181,7 +188,11 @@ class Nox
         let routeData = Object.keys(components).map((c) => {
             let urls = components[c].urls
             let pathArray = `[${urls.map(url => `'${url}'`).join(',')}]`
-            return `<Route exact path={${pathArray}}>
+            let exact = ""
+            if(urls.indexOf('/') !== -1) {
+                exact = "exact"
+            }
+            return `<Route ${exact} path={${pathArray}}>
         <${components[c].name} />
     </Route>`
         }).join("\n")

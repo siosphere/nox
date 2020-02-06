@@ -1,5 +1,5 @@
 import * as React from 'react'
-import {BrowserRouter, NavLink, Link, Redirect} from 'react-router-dom'
+import {BrowserRouter, NavLink, Link, Redirect, useLocation, useHistory, useRouteMatch, useParams} from 'react-router-dom'
 import {Route, Switch} from "react-router"
 import ClientContext from 'client/context'
 import Entry from 'client/entry'
@@ -30,5 +30,9 @@ export {
     Switch,
     Entry,
     MetaContext,
-    useMeta
+    useMeta,
+    useLocation,
+    useHistory,
+    useRouteMatch,
+    useParams
 }

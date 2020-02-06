@@ -39,7 +39,7 @@ ${this.getHead(meta)}
 <body>
 ${componentOutput}
 <script type="text/javascript">
-    window.__NOX_INITIAL_STATE__ = ${componentProps}
+    window.__NOX_INITIAL_STATE__ = ${componentProps.replace(/</g, '\\u003c')}
 </script>
 <script type="text/javascript" defer src="/dist/bundle.js"></script>
 </body>

@@ -10,11 +10,25 @@ interface EntryProps
 }
 
 const Entry = (props : EntryProps) => {
-    const context = new props.context(window['__NOX_INITIAL_STATE__'])
+    const [context, setContext] = React.useState(new props.context(window['__NOX_INITIAL_STATE__']))
+
+    context.setContext = setContext
+
+    React.useEffect(() => {
+        return () => {
+            if(context) {
+                context.close()
+            }
+        }
+    }, [])
+
+    const Wrapper = context.wrapper
 
     return <ClientContext.Provider value={context}>
         <MetaWrapper>
-            {props.children}
+            <Wrapper>
+                {props.children}
+            </Wrapper>
         </MetaWrapper>
     </ClientContext.Provider>
 }

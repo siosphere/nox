@@ -12,7 +12,9 @@ const NOX_AUTH_HEADER = 'NOX_AUTH'
 
 interface AppContext
 {
+    wrapper : React.JSXElementConstructor<any>
     dump() : object
+    close() : void
 }
 
 class Server
@@ -28,6 +30,11 @@ class Server
         this.routes = routes
     }
 
+    getToken() : string
+    {
+        return this.request.header('NOX_AUTH') || this.request.cookies['Nox-Auth'] || ""
+    }
+
     render(component : React.ReactElement, context : AppContext) : Response
     {
         let layout = null
@@ -39,6 +46,8 @@ class Server
         const sdk = new SDK()
         let meta = null
 
+        const Wrapper = context.wrapper
+
         const componentOutput = ReactDOMServer.renderToString(
             <MetaWrapper>
                 <ClientContext.Provider value={context}>
@@ -48,15 +57,17 @@ class Server
                                 meta = metaContext
                                 return <LayoutContext.Provider value={[null, setContext]}>
                                     <StaticRouter location={this.request.url}>
-                                        <Switch>
-                                            <Route path={this.request.routeUrls}>
-                                                {React.cloneElement(component, {
-                                                    ...component.props,
-                                                    metaContext: metaContext
-                                                })}
-                                            </Route>
-                                            {this.getAdditionalRoutes()}
-                                        </Switch>
+                                        <Wrapper>
+                                            <Switch>
+                                                <Route path={this.request.routeUrls}>
+                                                    {React.cloneElement(component, {
+                                                        ...component.props,
+                                                        metaContext: metaContext
+                                                    })}
+                                                </Route>
+                                                {this.getAdditionalRoutes()}
+                                            </Switch>
+                                        </Wrapper>
                                     </StaticRouter>
                                 </LayoutContext.Provider>
                             }}
@@ -66,6 +77,7 @@ class Server
             </MetaWrapper>)
 
         const componentProps = JSON.stringify(context.dump())
+        context.close()
 
         const output = layout.getHTML(meta, componentOutput, componentProps)
 
