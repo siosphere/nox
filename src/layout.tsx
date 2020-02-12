@@ -27,6 +27,7 @@ class Layout extends React.PureComponent<LayoutProps, {}>
 
     getHTML(meta : Meta, componentOutput : string, componentProps : string)
     {
+        const server = process.env['NODE_ENV'] === 'development' ? 'http://localhost:8081' : '/dist'
         return `<!doctype html>
 <!--[if !IE]><!--->
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -37,11 +38,11 @@ class Layout extends React.PureComponent<LayoutProps, {}>
 <html>
 ${this.getHead(meta)}
 <body>
-${componentOutput}
+<div id="app">${componentOutput}</div>
 <script type="text/javascript">
     window.__NOX_INITIAL_STATE__ = ${componentProps.replace(/</g, '\\u003c')}
 </script>
-<script type="text/javascript" defer src="/dist/bundle.js"></script>
+<script type="text/javascript" defer src="${server}/bundle.js"></script>
 </body>
 </html>`
     }

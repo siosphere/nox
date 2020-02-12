@@ -8,4 +8,4 @@ import AppContext from '/** nox:context */'
 
 ReactDOM.hydrate(<Entry context={AppContext}><BrowserRouter><Switch>
     /** nox:routes */
-</Switch></BrowserRouter></Entry>, document.body)
+</Switch></BrowserRouter></Entry>, document.getElementById("app"))
