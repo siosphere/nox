@@ -27,7 +27,7 @@ class Layout extends React.PureComponent<LayoutProps, {}>
 
     getHTML(meta : Meta, componentOutput : string, componentProps : string)
     {
-        const server = process.env['NODE_ENV'] === 'development' ? 'http://localhost:8081' : '/dist'
+        const server = process.env['NODE_ENV'] === 'development' ? 'http://localhost:8888' : '/dist'
         return `<!doctype html>
 <!--[if !IE]><!--->
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
