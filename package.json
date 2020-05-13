@@ -1,9 +1,10 @@
 {
   "name": "@workshift/nox",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "main": "lib/index.js",
   "files": [
-    "lib/*"
+    "lib/*",
+    "stub/*"
   ],
   "author": "Michael Kramer <kramer@siosphere.com>",
   "license": "UNLICENSED",
