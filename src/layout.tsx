@@ -28,6 +28,21 @@ class Layout extends React.PureComponent<LayoutProps, {}>
     getHTML(meta : Meta, componentOutput : string, componentProps : string)
     {
         const server = process.env['NODE_ENV'] === 'development' ? 'http://localhost:8888' : '/dist'
+        const scripts = []
+
+        if(process.env['NODE_ENV'] === 'production') {
+            const assets = require(`${process.cwd()}/webpack-assets.json`)
+            Object.keys(assets).forEach(asset => {
+                scripts.push(assets[asset].js)
+            })
+        } else {
+            scripts.push(`${server}/bundle.js`)
+        }
+
+        const scriptString = scripts.map(path => {
+            return `<script type="text/javascript" defer src="${path}"></script>`
+        }).join("\n")
+
         return `<!doctype html>
 <!--[if !IE]><!--->
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -42,7 +57,7 @@ ${this.getHead(meta)}
 <script type="text/javascript">
     window.__NOX_INITIAL_STATE__ = ${componentProps.replace(/</g, '\\u003c')}
 </script>
-<script type="text/javascript" defer src="${server}/bundle.js"></script>
+${scriptString}
 </body>
 </html>`
     }

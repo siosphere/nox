@@ -32,7 +32,7 @@ interface NoxConfiguration
 }
 
 const DefaultNoxConfiguration : Partial<NoxConfiguration> = {
-    apiPrefix: '/api',
+    apiPrefix: '',
     port: 3000,
     startMessage: "Nox started",
 }
@@ -133,6 +133,7 @@ class Nox
     {
         if(process.env['NOX_MODE'] === "generate") {
             this.generateClient()
+            return
         }
         this.app.listen(this.config('port'), () => {
             console.info(this.config('startMessage'))
@@ -150,7 +151,7 @@ class Nox
 
     protected generateClient()
     {
-        console.log("Genearting client bundle...")
+        console.log("generating client bundle...")
         let components = {}
         for(let url in this._routes) {
             let component = this._routes[url]
@@ -211,82 +212,8 @@ class Nox
             recursive: true,
         })
         fs.writeFileSync(path.join(buildPath, 'entry.tsx'), entry)
-        fs.writeFileSync(path.join(buildPath, 'webpack.config.js'), config)
         
-        const webpackConfig = require(path.join(buildPath, 'webpack.config.js'))
-
-        process.chdir('./tmp')
-        
-        webpack(webpackConfig, (err, stats) => {
-            if (err || stats.hasErrors()) {
-                console.error("FAILED", err, stats.toString())
-                return
-            }
-
-            console.log("Generated client bundle")
-        })
-        //if we are generating the client....
-        /*const stack = new Error().stack
-        const stackData = stack.split("\n")
-        const line = stackData[3]
-        const pathRegex = /\(([a-z0-9\-\_\.\s\/\\]+):[0-9]+:[0-9]+\)/gi
-        const path = pathRegex.exec(line)
-        const contents = fs.readFileSync(path[1]).toString()
-        const tree = esprima.parse(contents)
-
-        //list of all declared variables
-        let declaredVariables = {}
-        let noxVar
-        let appVar
-        tree.body.forEach(node => {
-            if(node.type === 'VariableDeclaration') {
-                node.declarations.forEach(d => {
-                    
-                    if(d.type !== 'VariableDeclarator') {
-                        return
-                    }
-
-                    const name = d.id.name
-                })
-            }
-            if(!noxVar) {
-                if(node.type === 'VariableDeclaration') {
-                    node.declarations.forEach(d => {
-                        if(noxVar) {
-                            return
-                        }
-                        if(!d.init.callee || d.init.callee.name !== "require") {
-                            return
-                        }
-                        if(typeof d.init.arguments[0] !== 'object') {
-                            return
-                        }
-                        if(d.init.arguments[0].value !== "./index") { //TODO: change to "nox"
-                            return
-                        }
-
-                        console.log('variable that has nox is', d.id.name)
-                        noxVar = d.id.name
-                    })
-                }
-                return
-            }
-            if(!appVar) {
-                if(node.type === 'VariableDeclaration') {
-                    node.declarations.forEach(d => {
-                        if(d.init.type === 'CallExpression' && d.init.callee.type === 'MemberExpression' && d.init.callee.object.name === noxVar && d.init.callee.property.value === "default") {
-                            appVar = d.id.name
-                        }
-                    })
-                }
-                return
-            }
-            //should have appVar
-            if(node.type === 'ExpressionStatement' && node.expression.type === "CallExpression" && node.expression.callee.object.name === appVar && node.expression.callee.property.name === "route") {
-                console.log('ROUTE CALL', node)
-            }
-        })
-        //if routes are not defined here, and we don't have a configured route file path, error*/
+        console.log("entry typescript generated, run `npx webpack-cli` to generate client bundle")
     }
 
     protected handleCallback(cb : (server : Server) => Response, urls : string | string[])
