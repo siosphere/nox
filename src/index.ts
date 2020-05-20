@@ -32,7 +32,7 @@ interface NoxConfiguration
 }
 
 const DefaultNoxConfiguration : Partial<NoxConfiguration> = {
-    apiPrefix: '',
+    apiPrefix: '/api',
     port: 3000,
     startMessage: "Nox started",
 }
@@ -183,6 +183,10 @@ class Nox
             componentID++
             components[p].name = componentName
 
+            if(process.env['NODE_ENV'] !== 'production') {
+                relativePath = relativePath.replace('../lib', '../src').replace('.js', '')
+            }
+
             return `import ${componentName} from '${relativePath}'`
         }).join("\n")
 
@@ -207,6 +211,9 @@ class Nox
         entry = entry.replace('/** nox:routes */', routeData)
         //TODO: fix pathing...
         let relativePath = path.relative(buildPath, this.contextConstructor.path)
+        if(process.env['NODE_ENV'] !== 'production') {
+            relativePath = relativePath.replace('../lib', '../src').replace('.js', '')
+        }
         entry = entry.replace('/** nox:context */', relativePath)
         fs.mkdirSync(buildPath, {
             recursive: true,
