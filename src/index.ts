@@ -45,37 +45,37 @@ class Nox
     contextConstructor : any
 
     api = {
-        get: function(urls : string | string[], cb : (server : Server) => Response) {
+        get: function(urls : string | string[], cb : (server : Server) => Promise<Response>) {
             urls = this.prefixApiURLs(urls)
             return this.app.get(
                 urls, this.handleCallback(cb, urls))
         },
-        post: function(urls : string | string[], cb : (server : Server) => Response) {
+        post: function(urls : string | string[], cb : (server : Server) => Promise<Response>) {
             urls = this.prefixApiURLs(urls)
             return this.app.get(
                 urls, this.handleCallback(cb, urls))
         },
-        put: function(urls : string | string[], cb : (server : Server) => Response) {
+        put: function(urls : string | string[], cb : (server : Server) => Promise<Response>) {
             urls = this.prefixApiURLs(urls)
             return this.app.get(
                 urls, this.handleCallback(cb, urls))
         },
-        delete: function(urls : string | string[], cb : (server : Server) => Response) {
+        delete: function(urls : string | string[], cb : (server : Server) => Promise<Response>) {
             urls = this.prefixApiURLs(urls)
             return this.app.get(
                 urls, this.handleCallback(cb, urls))
         },
-        patch: function(urls : string | string[], cb : (server : Server) => Response) {
+        patch: function(urls : string | string[], cb : (server : Server) => Promise<Response>) {
             urls = this.prefixApiURLs(urls)
             return this.app.get(
                 urls, this.handleCallback(cb, urls))
         },
-        head: function(urls : string | string[], cb : (server : Server) => Response) {
+        head: function(urls : string | string[], cb : (server : Server) => Promise<Response>) {
             urls = this.prefixApiURLs(urls)
             return this.app.get(
                 urls, this.handleCallback(cb, urls))
         },
-        options: function(urls : string | string[], cb : (server : Server) => Response) {
+        options: function(urls : string | string[], cb : (server : Server) => Promise<Response>) {
             urls = this.prefixApiURLs(urls)
             return this.app.get(
                 urls, this.handleCallback(cb, urls))
@@ -118,7 +118,7 @@ class Nox
         return this
     }
 
-    route(urls : string | string[], cb : (server : Server) => Response, component : React.JSXElementConstructor<any>)
+    route(urls : string | string[], cb : (server : Server) => Promise<Response>, component : React.JSXElementConstructor<any>)
     {
         this.registerRoutes(urls, component)
         this.app.get(urls, this.handleCallback(cb, urls))
@@ -223,15 +223,22 @@ class Nox
         console.log("entry typescript generated, run `npx webpack-cli` to generate client bundle")
     }
 
-    protected handleCallback(cb : (server : Server) => Response, urls : string | string[])
+    protected handleCallback(cb : (server : Server) => Promise<Response>, urls : string | string[])
     {
-        return (req, res) => {
+        return (req : express.Request, res : express.Response) => {
             req.routeUrls = urls
 
             const server = this.createServerFromRequest(req, res)
             //do voodoo
-            const response = cb(server)
-            response.send(res)
+            cb(server).then((response) => {
+                response.send(res)
+            }).catch((err) => {
+                console.error(err)
+                res.status(500)
+                res.end()
+                
+                throw err
+            })
         }
     }
 

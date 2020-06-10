@@ -33,7 +33,9 @@ class Layout extends React.PureComponent<LayoutProps, {}>
         if(process.env['NODE_ENV'] === 'production') {
             const assets = require(`${process.cwd()}/webpack-assets.json`)
             Object.keys(assets).forEach(asset => {
-                scripts.push(assets[asset].js)
+                if(asset !== "") {
+                    scripts.push(assets[asset].js)
+                }
             })
         } else {
             scripts.push(`${server}/bundle.js`)

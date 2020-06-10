@@ -35,7 +35,7 @@ class Server
         return this.request.header('NOX_AUTH') || this.request.cookies['Nox-Auth'] || ""
     }
 
-    render(component : React.ReactElement, context : AppContext) : Response
+    render(component : React.ReactElement, context : AppContext, includeAdditional : boolean = true) : Response
     {
         let layout = null
         const setContext = (node) => {
@@ -65,7 +65,7 @@ class Server
                                                         metaContext: metaContext
                                                     })}
                                                 </Route>
-                                                {this.getAdditionalRoutes()}
+                                                {includeAdditional && this.getAdditionalRoutes()}
                                             </Switch>
                                         </Wrapper>
                                     </StaticRouter>
@@ -88,7 +88,7 @@ class Server
     {
         let routes = []
         for(let url in this.routes) {
-            if(this.request.routeUrls.indexOf(url) !== -1) {
+            if(this.request.routeUrls && this.request.routeUrls.indexOf(url) !== -1) {
                 continue
             }
 
